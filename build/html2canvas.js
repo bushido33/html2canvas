@@ -18,7 +18,7 @@ _html2canvas.Util = {};
 
 _html2canvas.Util.log = function(a) {
   if (_html2canvas.logging && window.console && window.Util.log) {
-    window.Util.log(a);
+    window.console.log(a);
   }
 };
 
@@ -408,7 +408,7 @@ _html2canvas.Util.Children = function( elem ) {
     })(elem.childNodes);
 
   } catch (ex) {
-    Util.log("html2canvas.Util.Children failed with exception: " + ex.message);
+    _html2canvas.Util.log("html2canvas.Util.Children failed with exception: " + ex.message);
     children = [];
   }
   return children;
@@ -2116,7 +2116,6 @@ _html2canvas.Parse = function (images, options) {
         renderListItem(element, stack, backgroundBounds);
         break;
       case "CANVAS":
-        Util.log(element);
         renderImage(ctx, element, element, bounds, borders);
         break;
     }
@@ -2628,7 +2627,7 @@ _html2canvas.Util.Support = function (options, doc) {
     } catch(e) {
       return false;
     }
-    Util.log('html2canvas: Parse: SVG powered rendering available');
+    _html2canvas.Util.log('html2canvas: Parse: SVG powered rendering available');
     return true;
   }
 
