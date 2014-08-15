@@ -17,8 +17,8 @@ html2canvas;
 _html2canvas.Util = {};
 
 _html2canvas.Util.log = function(a) {
-  if (_html2canvas.logging && window.console && window.console.log) {
-    window.console.log(a);
+  if (_html2canvas.logging && window.console && window.Util.log) {
+    window.Util.log(a);
   }
 };
 
@@ -408,7 +408,7 @@ _html2canvas.Util.Children = function( elem ) {
     })(elem.childNodes);
 
   } catch (ex) {
-    _html2canvas.Util.log("html2canvas.Util.Children failed with exception: " + ex.message);
+    Util.log("html2canvas.Util.Children failed with exception: " + ex.message);
     children = [];
   }
   return children;
@@ -2116,6 +2116,7 @@ _html2canvas.Parse = function (images, options) {
         renderListItem(element, stack, backgroundBounds);
         break;
       case "CANVAS":
+        Util.log(element);
         renderImage(ctx, element, element, bounds, borders);
         break;
     }
@@ -2123,13 +2124,19 @@ _html2canvas.Parse = function (images, options) {
     return stack;
   }
 
+  function isElementDisplayed(element) {
+    return (getCSS(element, 'display') !== "none" &&  !element.hasAttribute("data-html2canvas-ignore"));
+  }
+  
   function isElementVisible(element) {
-    return (getCSS(element, 'display') !== "none" && getCSS(element, 'visibility') !== "hidden" && !element.hasAttribute("data-html2canvas-ignore"));
+      return (getCSS(element, 'visibility') !== "hidden");
   }
 
   function parseElement (element, stack, pseudoElement) {
-    if (isElementVisible(element)) {
-      stack = renderElement(element, stack, pseudoElement, false) || stack;
+    if (isElementDisplayed(element)) {
+      if (isElementVisible(element)) {
+        stack = renderElement(element, stack, pseudoElement, false) || stack;
+      }
       if (!ignoreElementsRegExp.test(element.nodeName)) {
         parseChildren(element, stack, pseudoElement);
       }
@@ -2141,7 +2148,9 @@ _html2canvas.Parse = function (images, options) {
       if (node.nodeType === node.ELEMENT_NODE) {
         parseElement(node, stack, pseudoElement);
       } else if (node.nodeType === node.TEXT_NODE) {
-        renderText(element, node, stack);
+        if (isElementVisible(element)) {
+            renderText(element, node, stack);
+        }
       }
     });
   }
@@ -2619,7 +2628,7 @@ _html2canvas.Util.Support = function (options, doc) {
     } catch(e) {
       return false;
     }
-    _html2canvas.Util.log('html2canvas: Parse: SVG powered rendering available');
+    Util.log('html2canvas: Parse: SVG powered rendering available');
     return true;
   }
 
