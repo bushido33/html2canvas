@@ -1091,26 +1091,34 @@ _html2canvas.Parse = function (images, options) {
 
     return stack;
   }
+  
+    function isElementDisplayed(element) {
+        return (getCSS(element, 'display') !== "none" &&  !element.hasAttribute("data-html2canvas-ignore"));
+    }
 
   function isElementVisible(element) {
-    return (getCSS(element, 'display') !== "none" && getCSS(element, 'visibility') !== "hidden" && !element.hasAttribute("data-html2canvas-ignore"));
+      return (getCSS(element, 'visibility') !== "hidden");
   }
 
-  function parseElement (element, stack, pseudoElement) {
-    if (isElementVisible(element)) {
-      stack = renderElement(element, stack, pseudoElement, false) || stack;
-      if (!ignoreElementsRegExp.test(element.nodeName)) {
-        parseChildren(element, stack, pseudoElement);
-      }
+    function parseElement(element, stack, pseudoElement) {
+        if (isElementDisplayed(element)) {
+            if (isElementVisible(element)) {
+                stack = renderElement(element, stack, pseudoElement, false) || stack;
+            }
+            if (!ignoreElementsRegExp.test(element.nodeName)) {
+                parseChildren(element, stack, pseudoElement);
+            }
+        }
     }
-  }
 
   function parseChildren(element, stack, pseudoElement) {
     Util.Children(element).forEach(function(node) {
       if (node.nodeType === node.ELEMENT_NODE) {
         parseElement(node, stack, pseudoElement);
       } else if (node.nodeType === node.TEXT_NODE) {
-        renderText(element, node, stack);
+            if (isElementVisible(element)) {
+                renderText(element, node, stack);
+            }
       }
     });
   }
