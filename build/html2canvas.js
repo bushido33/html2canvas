@@ -1,6 +1,6 @@
 /*
   html2canvas 0.4.1 <http://html2canvas.hertzen.com>
-  Copyright (c) 2013 Niklas von Hertzen
+  Copyright (c) 2014 Niklas von Hertzen
 
   Released under MIT License
 */
@@ -491,6 +491,7 @@ _html2canvas.Util.Font = (function () {
   var reGradients = [
   /^(-webkit-linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
   /^(-o-linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
+  /^(linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
   /^(-webkit-gradient)\((linear|radial),\s((?:\d{1,3}%?)\s(?:\d{1,3}%?),\s(?:\d{1,3}%?)\s(?:\d{1,3}%?))([\w\d\.\s,%\(\)\-]+)\)$/,
   /^(-moz-linear-gradient)\(((?:\d{1,3}%?)\s(?:\d{1,3}%?))([\w\d\.\s,%\(\)]+)\)$/,
   /^(-webkit-radial-gradient)\(((?:\d{1,3}%?)\s(?:\d{1,3}%?)),\s(\w+)\s([a-z\-]+)([\w\d\.\s,%\(\)]+)\)$/,
@@ -506,7 +507,6 @@ _html2canvas.Util.Font = (function () {
  */
   Generate.parseGradient = function(css, bounds) {
     var gradient, i, len = reGradients.length, m1, stop, m2, m2Len, step, m3, tl,tr,br,bl;
-
     for(i = 0; i < len; i+=1){
       m1 = css.match(reGradients[i]);
       if(m1) {
@@ -518,7 +518,7 @@ _html2canvas.Util.Font = (function () {
       switch(m1[1]) {
         case '-webkit-linear-gradient':
         case '-o-linear-gradient':
-
+        case 'linear-gradient':
           gradient = {
             type: 'linear',
             x0: null,
@@ -535,6 +535,7 @@ _html2canvas.Util.Font = (function () {
             for(i = 0; i < m2Len; i+=1){
               switch(m2[i]) {
                 case 'top':
+                case 'rgb':
                   gradient.y0 = 0;
                   gradient.y1 = bounds.height;
                   break;
