@@ -1,6 +1,6 @@
 /*
   html2canvas 0.4.1 <http://html2canvas.hertzen.com>
-  Copyright (c) 2013 Niklas von Hertzen
+  Copyright (c) 2014 Niklas von Hertzen
 
   Released under MIT License
 */
@@ -490,6 +490,7 @@ _html2canvas.Util.Font = (function () {
   var reGradients = [
   /^(-webkit-linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
   /^(-o-linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
+  /^(linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
   /^(-webkit-gradient)\((linear|radial),\s((?:\d{1,3}%?)\s(?:\d{1,3}%?),\s(?:\d{1,3}%?)\s(?:\d{1,3}%?))([\w\d\.\s,%\(\)\-]+)\)$/,
   /^(-moz-linear-gradient)\(((?:\d{1,3}%?)\s(?:\d{1,3}%?))([\w\d\.\s,%\(\)]+)\)$/,
   /^(-webkit-radial-gradient)\(((?:\d{1,3}%?)\s(?:\d{1,3}%?)),\s(\w+)\s([a-z\-]+)([\w\d\.\s,%\(\)]+)\)$/,
@@ -517,6 +518,7 @@ _html2canvas.Util.Font = (function () {
       switch(m1[1]) {
         case '-webkit-linear-gradient':
         case '-o-linear-gradient':
+        case 'linear-gradient':
 
           gradient = {
             type: 'linear',
@@ -534,6 +536,7 @@ _html2canvas.Util.Font = (function () {
             for(i = 0; i < m2Len; i+=1){
               switch(m2[i]) {
                 case 'top':
+                case 'rgb':
                   gradient.y0 = 0;
                   gradient.y1 = bounds.height;
                   break;
@@ -1106,7 +1109,11 @@ _html2canvas.Parse = function (images, options, cb) {
       // Trim off the :after and :before (or ::after and ::before)
       for (i = 0, j = classes.length; i < j; i++) {
         classes[i] = classes[i].match(/(^[^:]*)/)[1];
+        classes[i] = classes[i].replace(',','');
       }
+      
+      // remove empty values, if not could cause invalid selectors with querySelectorAll
+      classes = classes.filter(function (n) { return n; });
     }
 
     // Using the list of elements we know how pseudo el styles, create fake pseudo elements.
@@ -2304,6 +2311,7 @@ _html2canvas.Parse = function (images, options, cb) {
     }
   }
 };
+
 _html2canvas.Preload = function( options ) {
 
   var images = {
@@ -2663,7 +2671,7 @@ _html2canvas.Renderer = function(parseQueue, options){
     })(parseQueue);
 
     function sortZ(context) {
-      Object.keys(context).sort().forEach(function(zi) {
+      Object.keys(context).sort(function(a, b) { return a - b; }).forEach(function(zi) {
         var nonPositioned = [],
         floated = [],
         positioned = [],

@@ -7,6 +7,7 @@
   var reGradients = [
   /^(-webkit-linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
   /^(-o-linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
+  /^(linear-gradient)\(([a-z\s]+)([\w\d\.\s,%\(\)]+)\)$/,
   /^(-webkit-gradient)\((linear|radial),\s((?:\d{1,3}%?)\s(?:\d{1,3}%?),\s(?:\d{1,3}%?)\s(?:\d{1,3}%?))([\w\d\.\s,%\(\)\-]+)\)$/,
   /^(-moz-linear-gradient)\(((?:\d{1,3}%?)\s(?:\d{1,3}%?))([\w\d\.\s,%\(\)]+)\)$/,
   /^(-webkit-radial-gradient)\(((?:\d{1,3}%?)\s(?:\d{1,3}%?)),\s(\w+)\s([a-z\-]+)([\w\d\.\s,%\(\)]+)\)$/,
@@ -34,6 +35,7 @@
       switch(m1[1]) {
         case '-webkit-linear-gradient':
         case '-o-linear-gradient':
+        case 'linear-gradient':
 
           gradient = {
             type: 'linear',
@@ -51,6 +53,7 @@
             for(i = 0; i < m2Len; i+=1){
               switch(m2[i]) {
                 case 'top':
+                case 'rgb':
                   gradient.y0 = 0;
                   gradient.y1 = bounds.height;
                   break;
