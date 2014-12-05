@@ -77,6 +77,7 @@ _html2canvas.Renderer.Canvas = function(options) {
 
     fstyle = ctx.fillStyle;
     ctx.fillStyle = (Util.isTransparent(parsedData.backgroundColor) && options.background !== undefined) ? options.background : parsedData.backgroundColor;
+    if(options.background == undefined) ctx.fillStyle = "transparent";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = fstyle;
 

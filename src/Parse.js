@@ -76,7 +76,11 @@ _html2canvas.Parse = function (images, options, cb) {
       // Trim off the :after and :before (or ::after and ::before)
       for (i = 0, j = classes.length; i < j; i++) {
         classes[i] = classes[i].match(/(^[^:]*)/)[1];
+        classes[i] = classes[i].replace(',','');
       }
+      
+      // remove empty values, if not could cause invalid selectors with querySelectorAll
+      classes = classes.filter(function (n) { return n; });
     }
 
     // Using the list of elements we know how pseudo el styles, create fake pseudo elements.
